@@ -1,0 +1,73 @@
+{
+ "actions": [],
+ "creation": "2024-03-16 12:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "section_auth",
+  "api_secret",
+  "cb_enable",
+  "enable_sync",
+  "section_defaults",
+  "default_customer_group",
+  "default_item"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_auth",
+   "fieldtype": "Section Break",
+   "label": "Authentication"
+  },
+  {
+   "fieldname": "api_secret",
+   "fieldtype": "Password",
+   "label": "API Secret",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "enable_sync",
+   "fieldtype": "Check",
+   "label": "Enable Sync"
+  },
+  {
+   "fieldname": "section_defaults",
+   "fieldtype": "Section Break",
+   "label": "Defaults"
+  },
+  {
+   "fieldname": "default_customer_group",
+   "fieldtype": "Link",
+   "label": "Default Customer Group",
+   "options": "Customer Group"
+  },
+  {
+   "fieldname": "default_item",
+   "fieldtype": "Link",
+   "label": "Default Item for Invoices",
+   "options": "Item"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2024-03-16 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Press ERP Sync",
+ "name": "Press Sync Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "states": []
+}

@@ -1,0 +1,22 @@
+[project]
+name = "press_erp_sync"
+authors = [
+    { name = "Antigravity", email = "assistant@google.com" }
+]
+description = "Sync customers and subscriptions from Frappe Press to ERPNext"
+requires-python = ">=3.10"
+dynamic = ["version"]
+dependencies = [
+    # "frappe~=15.0.0" # This should be checked against the site's frappe version
+]
+
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[tool.bench.app]
+title = "Press ERP Sync"
+description = "Sync customers and subscriptions from Frappe Press to ERPNext"
+publisher = "Antigravity"
+email = "assistant@google.com"
+license = "MIT"
