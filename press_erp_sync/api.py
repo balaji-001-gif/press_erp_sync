@@ -172,25 +172,21 @@ def create_invoice(customer, payment, subscription):
 
 def create_payment_entry(invoice, payment):
     """Creates and submits a Payment Entry for the Invoice."""
-    pe = frappe.new_doc("Payment Entry")
-    pe.payment_type = "Receive"
-    pe.party_type = "Customer"
-    pe.party = invoice.customer
+    from erpnext.accounts.doctype.payment_entry.payment_entry import get_payment_entry
     
+    # Use ERPNext's utility to auto-fill mandatory fields (accounts, currency, etc.) from invoice
+    pe = get_payment_entry("Sales Invoice", invoice.name)
+    
+    # Set the amount correctly from the webhook
     amount = flt(payment.get("amount", 0))
-
-    pe.received_amount = amount
-    pe.target_exchange_rate = 1.0
     pe.paid_amount = amount
+    pe.received_amount = amount
     
-    pe.append("references", {
-        "reference_doctype": "Sales Invoice",
-        "reference_name": invoice.name,
-        "total_amount": invoice.grand_total,
-        "outstanding_amount": invoice.grand_total,
-        "allocated_amount": invoice.grand_total
-    })
-    
+    # Ensure references are updated if amount changed
+    for ref in pe.references:
+        if ref.reference_name == invoice.name:
+            ref.allocated_amount = amount
+
     pe.insert(ignore_permissions=True)
     pe.submit()
     return pe
