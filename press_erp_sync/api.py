@@ -120,13 +120,18 @@ def sync_subscription(customer, data):
     # Logic to map Press plan_id to ERPNext Subscription Plan
     # For now, we assume the plan exists with the same ID or name
     
-    sub_name = frappe.db.get_value("Subscription", {"customer": customer, "press_subscription_id": data.get("id")}, "name")
+    sub_name = frappe.db.get_value("Subscription", {
+        "party_type": "Customer", 
+        "party": customer, 
+        "press_subscription_id": data.get("id")
+    }, "name")
     
     if sub_name:
         doc = frappe.get_doc("Subscription", sub_name)
     else:
         doc = frappe.new_doc("Subscription")
-        doc.customer = customer
+        doc.party_type = "Customer"
+        doc.party = customer
         doc.press_subscription_id = data.get("id") # Custom field required
 
     doc.status = data.get("status", "Active")
