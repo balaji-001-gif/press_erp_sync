@@ -146,20 +146,24 @@ def sync_subscription(customer, data):
     doc.save(ignore_permissions=True)
     return doc.name
 
+from frappe.utils import flt, today
+
 def create_invoice(customer, payment, subscription):
     """Creates and submits a Sales Invoice."""
     si = frappe.new_doc("Sales Invoice")
     si.customer = customer
-    si.posting_date = frappe.utils.today()
-    si.due_date = frappe.utils.today()
+    si.posting_date = today()
+    si.due_date = today()
     
     # Map subscription to items or use a generic "Service" item
     item_code = frappe.db.get_single_value("Press Sync Settings", "default_item") or "Subscription"
     
+    amount = flt(payment.get("amount", 0))
+
     si.append("items", {
         "item_code": item_code,
         "qty": 1,
-        "rate": payment.get("amount", 0)
+        "rate": amount
     })
     
     si.insert(ignore_permissions=True)
@@ -172,9 +176,12 @@ def create_payment_entry(invoice, payment):
     pe.payment_type = "Receive"
     pe.party_type = "Customer"
     pe.party = invoice.customer
-    pe.received_amount = payment.get("amount", 0)
+    
+    amount = flt(payment.get("amount", 0))
+
+    pe.received_amount = amount
     pe.target_exchange_rate = 1.0
-    pe.paid_amount = payment.get("amount", 0)
+    pe.paid_amount = amount
     
     pe.append("references", {
         "reference_doctype": "Sales Invoice",
