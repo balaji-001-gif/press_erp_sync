@@ -51,12 +51,23 @@ def handle_press_event():
 def verify_secret():
     """Verify the X-Press-Secret header against Press Sync Settings."""
     incoming_secret = frappe.get_request_header("X-Press-Secret")
-    stored_secret = frappe.db.get_single_value("Press Sync Settings", "api_secret")
+
+    # Retrieve stored secret using get_password (required for 'Password' field types)
+    settings = frappe.get_single("Press Sync Settings")
+    stored_secret = settings.get_password("api_secret") if settings else None
 
     if not stored_secret:
+        frappe.log_error("Press Sync: API Secret is not set in Press Sync Settings", "Press Sync Auth")
         frappe.throw(_("API Secret not configured in ERPNext"), frappe.ValidationError)
 
-    if not incoming_secret or incoming_secret.strip() != stored_secret.strip():
+    # Clean secrets
+    incoming_clean = incoming_secret.strip() if incoming_secret else ""
+    stored_clean = stored_secret.strip() if stored_secret else ""
+
+    if incoming_clean != stored_clean:
+        # Log limited debug info (first 3 chars) to help identify mismatch without exposing secret
+        debug_msg = f"Secret Mismatch. Incoming starts with '{incoming_clean[:3]}...', Stored starts with '{stored_clean[:3]}...'"
+        frappe.log_error(debug_msg, "Press Sync Auth")
         frappe.throw(_("Invalid API Secret"), frappe.AuthenticationError)
 
 def process_sync(payload):
