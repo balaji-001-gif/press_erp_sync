@@ -33,6 +33,8 @@ def handle_press_event():
 
     try:
         if event_type in ["payment_success", "signup", "renewal"]:
+            # Switch to Administrator to avoid permission errors when creating documents from a guest API
+            frappe.set_user("Administrator")
             process_sync(payload)
             log_entry.status = "Success"
         else:
