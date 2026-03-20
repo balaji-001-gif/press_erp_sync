@@ -172,21 +172,27 @@ def create_invoice(customer, payment, subscription):
 
 def create_payment_entry(invoice, payment):
     """Creates and submits a Payment Entry for the Invoice."""
+    amount = flt(payment.get("amount", 0))
+    if amount <= 0:
+        return None
+
     from erpnext.accounts.doctype.payment_entry.payment_entry import get_payment_entry
     
     # Use ERPNext's utility to auto-fill mandatory fields (accounts, currency, etc.) from invoice
     pe = get_payment_entry("Sales Invoice", invoice.name)
     
     # Set the amount correctly from the webhook
-    amount = flt(payment.get("amount", 0))
     pe.paid_amount = amount
     pe.received_amount = amount
+    pe.clearance_date = today()
     
-    # Ensure references are updated if amount changed
+    # Ensure references are updated
     for ref in pe.references:
         if ref.reference_name == invoice.name:
             ref.allocated_amount = amount
+            ref.outstanding_amount = invoice.outstanding_amount
 
+    pe.flags.ignore_mandatory = True # Extra safeguard for custom syncs
     pe.insert(ignore_permissions=True)
     pe.submit()
     return pe
