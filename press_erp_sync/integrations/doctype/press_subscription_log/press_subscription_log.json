@@ -40,7 +40,7 @@
  "links": [],
  "modified": "2024-03-16 12:00:00.000000",
  "modified_by": "Administrator",
- "module": "Press ERP Sync",
+ "module": "Integrations",
  "name": "Press Subscription Log",
  "naming_rule": "Expression",
  "autoname": "format:PRESS-LOG-{YYYY}-{MM}-{DD}-{####}",
