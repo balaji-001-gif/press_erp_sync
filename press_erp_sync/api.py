@@ -56,7 +56,7 @@ def verify_secret():
     if not stored_secret:
         frappe.throw(_("API Secret not configured in ERPNext"), frappe.ValidationError)
 
-    if incoming_secret != stored_secret:
+    if not incoming_secret or incoming_secret.strip() != stored_secret.strip():
         frappe.throw(_("Invalid API Secret"), frappe.AuthenticationError)
 
 def process_sync(payload):
